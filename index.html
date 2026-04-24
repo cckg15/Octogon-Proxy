@@ -1,34 +1,35 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <style>
-        body { background: #1a1a1a; color: white; font-family: sans-serif; text-align: center; padding: 50px; }
-        input { padding: 10px; width: 300px; border-radius: 5px; border: none; }
-        button { padding: 10px 20px; background: #27c93f; color: white; border: none; border-radius: 5px; cursor: pointer; }
-        #output { background: white; color: black; margin-top: 20px; text-align: left; padding: 20px; min-height: 300px; border-radius: 8px; overflow: auto; }
-    </style>
-</head>
-<body>
-    <h2>My Private Proxy</h2>
-    <input type="text" id="urlInput" placeholder="https://wikipedia.org">
-    <button onclick="fetchPage()">Go</button>
-    <div id="output">Results will appear here...</div>
+<script>
+    async function fetchPage() {
+        const input = document.getElementById('urlInput').value;
+        const output = document.getElementById('output');
+        const frame = document.createElement('iframe');
+        
+        // Style the iframe to fill the space
+        frame.style.width = "100%";
+        frame.style.height = "600px";
+        frame.style.border = "none";
+        
+        output.innerHTML = "Loading...";
 
-    <script>
-        async function fetchPage() {
-            const input = document.getElementById('urlInput').value;
-            const output = document.getElementById('output');
-            output.innerText = "Loading...";
+        try {
+            const response = await fetch(`/proxy?url=${encodeURIComponent(input)}`);
+            const html = await response.text();
+            
+            // Clear the "Loading..." text
+            output.innerHTML = "";
+            output.appendChild(frame);
 
-            try {
-                // Since this HTML is served by our Render app, we just use /proxy
-                const response = await fetch(`/proxy?url=${encodeURIComponent(input)}`);
-                const data = await response.text();
-                output.innerText = data; // Displays the code of the site
-            } catch (err) {
-                output.innerText = "Error: " + err.message;
-            }
+            // Inject the code into the iframe
+            const doc = frame.contentDocument || frame.contentWindow.document;
+            doc.open();
+            
+            // Add a <base> tag so images and CSS load from the real site
+            const baseTag = `<base href="${input}" target="_blank">`;
+            doc.write(html.replace('<head>', '<head>' + baseTag));
+            
+            doc.close();
+        } catch (err) {
+            output.innerText = "Error: " + err.message;
         }
-    </script>
-</body>
-</html>
+    }
+</script>
