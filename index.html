@@ -16,15 +16,14 @@
     <script>
         // Register the Service Worker
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js', {
-                    scope: './'
-                }).then(() => {
-                    console.log('Proxy Engine Ready');
-                });
+            navigator.servicwWorker.register('./sw.js', {
+                scope: './' 
+            }).then(reg => {
+                console.log('Engine active at scope:', reg.scope);
+            }).catch(err => {
+                console.error('Engine failed:', err);
             });
         }
-
         document.getElementById('proxy-form').addEventListener('submit', e => {
             e.preventDefault();
             const input = document.getElementById('url-input').value;
