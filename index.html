@@ -1,35 +1,35 @@
-<script>
-    async function fetchPage() {
-        const input = document.getElementById('urlInput').value;
-        const output = document.getElementById('output');
-        const frame = document.createElement('iframe');
-        
-        // Style the iframe to fill the space
-        frame.style.width = "100%";
-        frame.style.height = "600px";
-        frame.style.border = "none";
-        
-        output.innerHTML = "Loading...";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Web Proxy Interface</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background-color: #121212; color: white; }
+        .container { width: 80%; max-width: 600px; text-align: center; }
+        input[type="text"] { width: 100%; padding: 15px; border-radius: 5px; border: none; margin-bottom: 20px; font-size: 16px; }
+        button { padding: 10px 25px; border-radius: 5px; border: none; background-color: #007bff; color: white; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #0056b3; }
+        .info { margin-top: 20px; font-size: 12px; color: #888; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Web Proxy</h1>
+        <form id="proxyForm">
+            <input type="text" id="urlInput" placeholder="Enter URL (e.g., https://example.com)" required>
+            <button type="submit">Browse</button>
+        </form>
+        <p class="info">Requests will be routed through the configured backend server.</p>
+    </div>
 
-        try {
-            const response = await fetch(`/proxy?url=${encodeURIComponent(input)}`);
-            const html = await response.text();
-            
-            // Clear the "Loading..." text
-            output.innerHTML = "";
-            output.appendChild(frame);
-
-            // Inject the code into the iframe
-            const doc = frame.contentDocument || frame.contentWindow.document;
-            doc.open();
-            
-            // Add a <base> tag so images and CSS load from the real site
-            const baseTag = `<base href="${input}" target="_blank">`;
-            doc.write(html.replace('<head>', '<head>' + baseTag));
-            
-            doc.close();
-        } catch (err) {
-            output.innerText = "Error: " + err.message;
-        }
-    }
-</script>
+    <script>
+        document.getElementById('proxyForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const url = document.getElementById('urlInput').value;
+            // In a real app, you would redirect to your backend:
+            // window.location.href = `/proxy?url=${encodeURIComponent(url)}`;
+            alert('To function, this requires a backend script to fetch: ' + url);
+        });
+    </script>
+</body>
+</html>
